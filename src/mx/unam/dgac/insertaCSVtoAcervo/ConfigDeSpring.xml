@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- 
+		DataSource that works in any environment, and offers much better performance.
+		Uses Apache Commons DBCP for connection pooling. See Commons DBCP documentation
+		for the required JAR files. See the PetStore sample application also shipped with
+		Spring, for an example of Commons DBCP usage and the necessary build script.
+		Alternatively you can use another connection pool such as C3P0, similarly configured
+		using Spring.
+		A standalone connection pool such as Commons DBCP is a good choice for use outside an
+		application server environment, including web applications running in a web container without
+		JTA, or integration testing using the org.springframework.test package.
+	 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:14792/dgac"/>
+		<property name="username" value="dgacclient"/>
+		<property name="password" value="sidarta"/>
+	</bean>
+	
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+
+	<bean id="acervoDao" class="mx.unam.dgac.acervo.dao.BovedasDaoImpl">
+		<!--  como  dgac.dao.BovedasDaoImpl extiende a JdbcDaoSupport, le pasamos el datasource.
+		Ademas JdbcDaoSupport tiene un JdbcTemplate preconfigurado -->
+		<property name="dataSource">
+			<ref bean="dataSource"/>
+		</property>		
+	</bean>
+
+	<bean id="serviciosBovedas"
+		class="mx.unam.dgac.acervo.sevicios.BovedasServiceImpl">
+		<property name="acervoDao">
+			<ref bean="acervoDao"/>
+		</property>
+	</bean>
+	
+</beans>
